@@ -73,6 +73,7 @@ article, aside, canvas, details, figcaption, figure, footer, header, hgroup, men
 }
 #maincontent {
   width: 100%;
+  margin: 0 auto;
 }
 #footer {
   background-color: #2f4858;
@@ -87,18 +88,17 @@ article, aside, canvas, details, figcaption, figure, footer, header, hgroup, men
   z-index: 1000;
 }
 /* ====================== Navigation ====================== */
-nav {
+h1 {
   text-align: center;
   height: 80px;
   background-color: #2f4858;
   display: flex;
   align-items: center;
-  justify-content: center;  
+  justify-content: center; 
+  margin: auto; 
 }
-nav h1 {
-  margin: auto;
-}
-nav h1 a {
+
+h1 a {
   color: #fff;
   font-size: 1.5rem;
   line-height: 1.2;
@@ -140,7 +140,7 @@ nav h1 a {
 }
 /* ====================== Map ====================== */
 #map {
-  height: 300px;
+  height: 200px;
   width: 100%;
   background-color: #ccc;
 }
@@ -200,7 +200,7 @@ nav h1 a {
   /* min-height: 248px; */
   width: 100%;
 }
-#restaurants-list li h1 {
+#restaurants-list li h2 {
   color: #f26419;
   font-family: Arial,sans-serif;
   font-size: 1.5rem;
@@ -348,27 +348,15 @@ nav h1 a {
 
 @media screen and (min-width: 960px) {
 
-  #maincontent {
-    width: 960px;
-    margin: 0 auto;
-  }
-
-  #restaurants-list{
-    padding-right: 0;
-    margin-left: -15px;
-  } 
-
   #restaurants-list li {
     width: calc(100%/3 - 15px);
   }
-  
-  #restaurant-container,
-  #reviews-container {
-    padding-left: 0px;
-  }
-  
-  .inside #map-container, 
-  .inside #map {
-    width: calc(960px/2);
+}
+
+
+@media screen and (min-width: 1400px) {
+
+  #restaurants-list li {
+    width: calc(100%/4 - 15px);
   }
 }

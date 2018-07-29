@@ -14,16 +14,14 @@
 
 <body>
   <header>
-    <nav>
-      <h1>
-        <a href="/">Restaurant Reviews</a>
-      </h1>
-    </nav>
+    <h1>
+      <a href="/">Restaurant Reviews</a>
+    </h1>
   </header>
 
   <main id="maincontent">
-    <section tabindex="0" id="map-container" aria-label="Restaurants on the map">
-      <div id="map"></div>
+    <section id="map-container">
+      <div id="map" tabindex="0" aria-label="Restaurants on the map" role="application"></div>
     </section>
     <section>
       <div class="filter-options">
@@ -39,7 +37,7 @@
     </section>
   </main>
 
-  <script async src="js/register_sw.js"></script>    
+  <script async src="js/register_sw.js"></script>
   <script async src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBKqDBAGO4QGcZRC0nGGnF70hBeFKCNKXk&libraries=places&callback=initMap"></script>
   <script src="js/dbhelper.js"></script>
   <script src="js/main.js"></script>
