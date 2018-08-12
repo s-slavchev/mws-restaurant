@@ -4,6 +4,17 @@
 class DBHelper {
 
   /**
+   * Open database
+   */
+  static dbPromise() {
+    return idb.open('restaurants-db', 1, function (upgradeDb) {
+      upgradeDb.createObjectStore('restaurants', {
+        keyPath: 'id'
+      });
+    });
+  }
+
+  /**
    * Database URL.
    * Change this to restaurants.json file location on your server.
    */
@@ -13,17 +24,52 @@ class DBHelper {
   }
 
   /**
+   * Store Restaurats in the database 
+   * @param {Array} restaurants 
+   */
+  static storeRestaurants(restaurants) {
+
+    DBHelper.dbPromise().then(db => {
+      if (!db) return;
+
+      let tx = db.transaction('restaurants', 'readwrite');
+      let store = tx.objectStore('restaurants');
+
+      restaurants.forEach(restaurant => {
+        store.put(restaurant);
+      });
+    })
+  }
+
+  /**
    * Fetch all restaurants.
    */
   static fetchRestaurants(callback) {
 
-    fetch(this.DATABASE_URL).then(response => {
-      response.json().then(restaurants => {
-        callback(null, restaurants);
+    fetch(this.DATABASE_URL)
+      //fetch the data and store it in the database
+      .then(response => {
+        response.json().then(restaurants => {
+
+          DBHelper.storeRestaurants(restaurants);
+
+          callback(null, restaurants);
+        });
+      })
+      //if fetching fresh data fails use the ata from the database
+      .catch(error => {
+        DBHelper.dbPromise().then(db => {
+
+          let tx = db.transaction('restaurants');
+          let store = tx.objectStore('restaurants');
+
+          callback(null, store.getAll());
+        })
+        //Getting data from the database failed. We give up and call the callback with error
+        .catch(error => {
+          callback(error, null);
+        });
       });
-    }).catch(error => {
-      callback(error, null);
-    });
   }
 
   /**
@@ -145,7 +191,7 @@ class DBHelper {
    * Restaurant image URL.
    */
   static imageUrlForRestaurant(restaurant) {
-  
+
     let filename = restaurant.photograph || 'placeholder';
 
     return `/img/${filename}.jpg`;
