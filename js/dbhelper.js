@@ -63,7 +63,9 @@ class DBHelper {
           let tx = db.transaction('restaurants');
           let store = tx.objectStore('restaurants');
 
-          callback(null, store.getAll());
+          store.getAll().then(restaurants => {
+            callback(null, restaurants);
+          });
         })
         //Getting data from the database failed. We give up and call the callback with error
         .catch(error => {

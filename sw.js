@@ -1,4 +1,4 @@
-let cacheVersionName = 'restaurants-001';
+const cacheVersionName = 'restaurants-001';
 
 // cache all main files
 self.addEventListener('install', event => {
@@ -33,6 +33,11 @@ self.addEventListener('activate', function (event) {
 });
 
 self.addEventListener('fetch', event => {
+
+    //Skip caching the API responces since we store the data in the IndexedDB
+    if ((new URL(event.request.url)).href.startsWith('http://localhost:1337/restaurants')) {
+        return;
+    }
 
     event.respondWith(async function () {
 
