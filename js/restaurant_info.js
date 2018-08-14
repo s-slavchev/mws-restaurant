@@ -68,7 +68,7 @@ fillRestaurantHTML = (restaurant = self.restaurant) => {
     fillRestaurantHoursHTML();
   }
   // fill reviews
-  fillReviewsHTML();
+  fetchReviewsFromURL()
 }
 
 /**
@@ -92,9 +92,20 @@ fillRestaurantHoursHTML = (operatingHours = self.restaurant.operating_hours) => 
 }
 
 /**
+ * Get all reviews for the current restaurant.
+ */
+fetchReviewsFromURL = () => {
+  
+  DBHelper.fetchReviews(this.restaurant.id, (error, reviews) => {
+    self.reviews = reviews;
+    fillReviewsHTML();
+  });
+}
+
+/**
  * Create all reviews HTML and add them to the webpage.
  */
-fillReviewsHTML = (reviews = self.restaurant.reviews) => {
+fillReviewsHTML = (reviews = self.reviews) => {
   const container = document.getElementById('reviews-container');
   const title = document.createElement('h3');
   title.innerHTML = 'Reviews';
@@ -125,7 +136,7 @@ createReviewHTML = (review) => {
 
   const date = document.createElement('p');
   date.className = 'review-date';
-  date.innerHTML = review.date;
+  date.innerHTML = new Date(review.createdAt).toLocaleString();
   li.appendChild(date);
 
   const rating = document.createElement('p');

@@ -35,7 +35,7 @@ self.addEventListener('activate', function (event) {
 self.addEventListener('fetch', event => {
 
     //Skip caching the API responces since we store the data in the IndexedDB
-    if ((new URL(event.request.url)).href.startsWith('http://localhost:1337/restaurants')) {
+    if ((new URL(event.request.url)).href.startsWith('http://localhost:1337')) {
         return;
     }
 

@@ -8,9 +8,13 @@ class DBHelper {
    */
   static dbPromise() {
     return idb.open('restaurants-db', 1, function (upgradeDb) {
-      upgradeDb.createObjectStore('restaurants', {
-        keyPath: 'id'
-      });
+      if (!upgradeDb.objectStoreNames.contains('restaurants')) {
+        upgradeDb.createObjectStore('restaurants', { keyPath: 'id' });
+      }
+      if (!upgradeDb.objectStoreNames.contains('reviews')) {
+        let reviewsStore = upgradeDb.createObjectStore('reviews', { keyPath: 'id' });
+        reviewsStore.createIndex('restaurant', 'restaurant_id', { unique: false });
+      }
     });
   }
 
@@ -20,7 +24,7 @@ class DBHelper {
    */
   static get DATABASE_URL() {
     const port = 1337 // Change this to your server port
-    return `http://localhost:${port}/restaurants/`;
+    return `http://localhost:${port}`;
   }
 
   /**
@@ -46,7 +50,7 @@ class DBHelper {
    */
   static fetchRestaurants(callback) {
 
-    fetch(this.DATABASE_URL)
+    fetch(this.DATABASE_URL + '/restaurants/')
       //fetch the data and store it in the database
       .then(response => {
         response.json().then(restaurants => {
@@ -221,9 +225,9 @@ class DBHelper {
 
     restaurant.is_favorite = !restaurant.is_favorite;
 
-    return fetch(this.DATABASE_URL + restaurant.id, {
+    return fetch(this.DATABASE_URL + '/restaurants/' + restaurant.id, {
       method: 'PUT',
-      body: JSON.stringify({is_favorite: restaurant.is_favorite})
+      body: JSON.stringify({ is_favorite: restaurant.is_favorite })
     }).then(() => {
       return this.dbPromise()
         .then(db => {
@@ -236,4 +240,57 @@ class DBHelper {
         })
     });
   }
+
+  /**
+   * Fetch reviews for a restaurant.
+   */
+  static fetchReviews(restaurantId, callback) {
+
+    fetch(this.DATABASE_URL + `/reviews/?restaurant_id=${restaurantId}`)
+      //fetch the data and store it in the database
+      .then(response => {
+        response.json().then(reviews => {
+
+          DBHelper.storeReviews(reviews);
+
+          callback(null, reviews);
+        });
+      })
+      //if fetching fresh data fails use the ata from the database
+      .catch(error => {
+        DBHelper.dbPromise().then(db => {
+
+          let tx = db.transaction('reviews');
+          let store = tx.objectStore('reviews');
+          let restaurantIndex = store.index('restaurant');
+
+          restaurantIndex.getAll(restaurantId).then(reviews => {
+            callback(null, reviews);
+          });
+        })
+          //Getting data from the database failed. We give up and call the callback with error
+          .catch(error => {
+            callback(error, null);
+          });
+      });
+  }
+
+  /**
+   * Store Reviews in the database 
+   * @param {Array} reviews 
+   */
+  static storeReviews(reviews) {
+
+    DBHelper.dbPromise().then(db => {
+      if (!db) return;
+
+      let tx = db.transaction('reviews', 'readwrite');
+      let store = tx.objectStore('reviews');
+
+      reviews.forEach(review => {
+        store.put(review);
+      });
+    })
+  }
+
 }
