@@ -82,9 +82,9 @@ window.initMap = () => {
     title: 'Restaurant location shown on the map'
   });
   //add title to the map 
-  google.maps.event.addListenerOnce(self.map, 'idle', () => 
+  google.maps.event.addListenerOnce(self.map, 'idle', () =>
     document.getElementsByTagName('iframe')[0].title = "A map showing restaurant location"
-  ) 
+  )
   updateRestaurants();
 }
 
@@ -166,6 +166,23 @@ createRestaurantHTML = (restaurant) => {
   more.setAttribute('aria-label', `Visit details page for restaurant ${restaurant.name}`);
   more.href = DBHelper.urlForRestaurant(restaurant);
   li.append(more)
+  
+  const favoriteBtn = document.createElement('button');
+  favoriteBtn.innerText = '❤';
+  favoriteBtn.setAttribute('aria-label', `Add ${restaurant.name} to favorites`);
+  favoriteBtn.setAttribute('class', 'btn-favorite');
+  if(restaurant.is_favorite) {
+    favoriteBtn.classList.add('is-favorite');
+  }
+  //attach onclick event to the button with favorite functionality
+  favoriteBtn.onclick = () => {
+    DBHelper.restaurantToggleFavorite(restaurant).then(restaurant => {
+      restaurant.is_favorite 
+        ? favoriteBtn.classList.add('is-favorite')
+        : favoriteBtn.classList.remove('is-favorite');
+    });
+  };
+  li.append(favoriteBtn);
 
   return li
 }

@@ -20,7 +20,7 @@ class DBHelper {
    */
   static get DATABASE_URL() {
     const port = 1337 // Change this to your server port
-    return `http://localhost:${port}/restaurants`;
+    return `http://localhost:${port}/restaurants/`;
   }
 
   /**
@@ -67,10 +67,10 @@ class DBHelper {
             callback(null, restaurants);
           });
         })
-        //Getting data from the database failed. We give up and call the callback with error
-        .catch(error => {
-          callback(error, null);
-        });
+          //Getting data from the database failed. We give up and call the callback with error
+          .catch(error => {
+            callback(error, null);
+          });
       });
   }
 
@@ -213,4 +213,27 @@ class DBHelper {
     return marker;
   }
 
+
+  /**
+   * Add/remove a restaurant from favorites
+   */
+  static restaurantToggleFavorite(restaurant) {
+
+    restaurant.is_favorite = !restaurant.is_favorite;
+
+    return fetch(this.DATABASE_URL + restaurant.id, {
+      method: 'PUT',
+      body: JSON.stringify({is_favorite: restaurant.is_favorite})
+    }).then(() => {
+      return this.dbPromise()
+        .then(db => {
+          const tx = db.transaction('restaurants', 'readwrite');
+          const store = tx.objectStore('restaurants');
+
+          return store.put(restaurant).then(id => {
+            return store.get(id);
+          });
+        })
+    });
+  }
 }
