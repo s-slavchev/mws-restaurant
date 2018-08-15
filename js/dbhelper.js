@@ -276,21 +276,87 @@ class DBHelper {
   }
 
   /**
-   * Store Reviews in the database 
+   * Store all reviews in the database 
    * @param {Array} reviews 
    */
   static storeReviews(reviews) {
+    reviews.forEach(review => {
+      DBHelper.storeReview(review);
+    });
+  }
 
+  /**
+   * Store a review in the database
+   * @param {Object} review 
+   */
+  static storeReview(review) {
     DBHelper.dbPromise().then(db => {
       if (!db) return;
 
       let tx = db.transaction('reviews', 'readwrite');
       let store = tx.objectStore('reviews');
 
-      reviews.forEach(review => {
-        store.put(review);
-      });
+      store.put(review);
     })
+  }
+
+  /**
+   * Submit new review to the server. On error cache to local storage
+   * @param {Object} review 
+   */
+  static createReview(review) {
+
+    return fetch(this.DATABASE_URL + '/reviews/', {
+      method: 'POST',
+      body: JSON.stringify(review)
+    })
+    //review stored in the backend server
+    .then(response => response.json())
+    .then(review => {
+
+      return DBHelper.dbPromise().then(db => {
+        const tx = db.transaction('reviews', 'readwrite');
+        const store = tx.objectStore('reviews');
+
+        return store.put(review).then(id => store.get(id));
+      })
+    })
+    //offline or error, store the review to a localStorage
+    .catch(error => {
+
+      return DBHelper.storeOfflineReview(review);
+    });
+  }
+
+  /**
+   * Store review into local storage
+   * 
+   * Note: To store array in localStorage we must convert it to a string first
+   * since localStorage stores only strings. The reverse process is needed when we read the data.
+   * 
+   * @param {Object} review 
+   */
+  static storeOfflineReview(review) {
+
+    //read reviews from the local storage
+    let reviews = getOfflineReviews();
+
+    //add the current review to the other (if any) 
+    reviews.push(review);
+
+    //store all offline reviews to the localStorage
+    localStorage.setItem('reviews', JSON.stringify(reviews));
+
+    return review;
+  }
+
+  /**
+   * Get all offline reviews from the localStorage
+   */
+  static getOfflineReviews() {
+    return localStorage.getItem('reviews')
+    ? JSON.parse(localStorage.getItem('reviews'))
+    : [];
   }
 
 }

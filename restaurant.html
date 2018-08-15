@@ -8,7 +8,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
   <meta name="description" content="Reviews for all the restaurants in your neighborhood">
-  <meta name="theme-color" content="#2f4858"/>
+  <meta name="theme-color" content="#2f4858" />
   <link rel="stylesheet" href="/css/bootstrap-reboot.css" />
   <link rel="stylesheet" href="/css/styles.css">
   <link rel="manifest" href="/manifest.json">
@@ -43,6 +43,32 @@
     </section>
     <section id="reviews-container">
       <ul id="reviews-list"></ul>
+    </section>
+    <section id="write-review-form-container" role="form" aria-label="Submit a review for the restaurant">
+      <h3>Write a Review</h3>
+      <form id="write-review">
+        <label for="name">Your name:
+          <br>
+          <input id="name" name="name" type="text" required>
+        </label>
+        <label for="rating">Rating:
+          <br>
+          <select id="rating" name="rating" aria-label="Select rating from 1 to 5" required>
+            <option value>Please select rating</option>
+            <option value="1">1</option>
+            <option value="2">2</option>
+            <option value="3">3</option>
+            <option value="4">4</option>
+            <option value="5">5</option>
+          </select>
+        </label>
+        <label for="comments">Review:
+          <br>
+          <textarea id="comments" name="comments" required></textarea>
+        </label>
+        <br>
+        <button>Submit Your Review</button>
+      </form>
     </section>
   </main>
 

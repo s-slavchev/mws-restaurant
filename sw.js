@@ -7,10 +7,12 @@ self.addEventListener('install', event => {
             .then(cache => cache.addAll([
                 '/',
                 '/restaurant.html',
+                '/manifest.json',
                 '/css/styles.css',
                 '/css/bootstrap-reboot.css',
                 '/js/dbhelper.js',
                 '/js/main.js',
+                '/js/idb.js',
                 '/js/register_sw.js',
                 '/js/restaurant_info.js'
             ]))

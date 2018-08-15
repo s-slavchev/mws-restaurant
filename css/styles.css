@@ -214,7 +214,7 @@ h1 a {
 #restaurants-list p {
   margin: 0;
 }
-#restaurants-list li a {
+#restaurants-list li a, button {
   background-color: #f6ae2d;
   color: #000;
   display: inline-block;
@@ -224,7 +224,10 @@ h1 a {
   text-align: center;
   text-decoration: none;
   text-transform: uppercase;
+  border: none;
+  cursor: pointer;
 }
+
 
 .btn-favorite {
   position: absolute;
@@ -283,7 +286,8 @@ h1 a {
 	width: 100%;
 }
 #restaurant-container, 
-#reviews-container {
+#reviews-container,
+#write-review-form-container {
   border-bottom: 1px solid #d9d9d9;
   border-top: 1px solid #fff;
   padding: 15px;
@@ -315,6 +319,19 @@ h1 a {
   width: 100%;
 }
 
+#reviews-list li.offline {
+  border: 1px solid rgb(99, 28, 28);
+}
+
+#reviews-list li p.offline-message {
+  font-size: 0.9rem;
+  text-align: center;
+  background-color: rgb(99, 28, 28);
+  color: #fff;
+  margin: 0 -15px -15px -15px;
+  padding: 0.5rem;
+}
+
 .review-name {
   font-size: 1.2rem;
   font-weight: bold;
@@ -329,6 +346,19 @@ h1 a {
 
 #restaurant-hours td {
   color: #666;
+}
+
+#write-review-form-container form label,
+#write-review-form-container form input,
+#write-review-form-container form select,
+#write-review-form-container form textarea, 
+#write-review-form-container form button{
+  width: 100%;
+}
+
+#write-review-form-container form select {
+  background-color: white;
+  padding: 0.3em;
 }
 
 
@@ -368,6 +398,7 @@ h1 a {
 
   #restaurant-container,
   #reviews-container,
+  #write-review-form-container,
   #breadcrumb {
     width: 50%;
   }

@@ -20,6 +20,29 @@ window.initMap = () => {
   });
 }
 
+//handle write review form submission
+document.getElementById("write-review").addEventListener('submit', event => {
+  
+  event.preventDefault();
+  
+  let review = {
+    name: document.getElementsByName("name")[0].value,
+    rating: parseInt(document.getElementsByName("rating")[0].options[document.getElementsByName("rating")[0].selectedIndex].value),
+    comments: document.getElementsByName("comments")[0].value,
+    restaurant_id:  parseInt(getParameterByName('id')),
+    createdAt: Date.now(),
+    updatedAt: Date.now()
+  };
+
+  //create a review and add it to the DOM
+  DBHelper.createReview(review).then(review => {
+    fillReviewsHTML([review]);
+  });
+
+  event.target.reset();
+});
+
+
 /**
  * Get current restaurant from page URL.
  */
@@ -121,6 +144,12 @@ fillReviewsHTML = (reviews = self.reviews) => {
   reviews.forEach(review => {
     ul.appendChild(createReviewHTML(review));
   });
+
+  //display offline reviews
+  DBHelper.getOfflineReviews().forEach(review => {
+    ul.appendChild(createReviewHTML(review));
+  });
+
   container.appendChild(ul);
 }
 
@@ -148,6 +177,16 @@ createReviewHTML = (review) => {
   comments.className = 'review-comments';
   comments.innerHTML = review.comments;
   li.appendChild(comments);
+
+  //add 'offline' class to the li element for all offline reviews
+  //Offline reviews does not have ids
+  if(!review.id) {
+    li.classList.add('offline');
+    const offlineMessage = document.createElement('p');
+    offlineMessage.className = 'offline-message';
+    offlineMessage.innerHTML = 'You are offline. The review will be automatically submitted when a connection is available';
+    li.appendChild(offlineMessage);
+  }
 
   return li;
 }
