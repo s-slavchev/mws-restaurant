@@ -1,4 +1,4 @@
-const cacheVersionName = 'restaurants-001';
+const cacheVersionName = 'restaurants-003';
 
 // cache all main files
 self.addEventListener('install', event => {
