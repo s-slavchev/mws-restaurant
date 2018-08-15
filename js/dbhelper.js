@@ -303,8 +303,9 @@ class DBHelper {
   /**
    * Submit new review to the server. On error cache to local storage
    * @param {Object} review 
+   * @param {Boolean} storeLocally control whether the review should be stored offline
    */
-  static createReview(review) {
+  static createReview(review, storeLocally = true) {
 
     return fetch(this.DATABASE_URL + '/reviews/', {
       method: 'POST',
@@ -323,8 +324,10 @@ class DBHelper {
     })
     //offline or error, store the review to a localStorage
     .catch(error => {
-
-      return DBHelper.storeOfflineReview(review);
+      if (storeLocally) {
+        DBHelper.storeOfflineReview(review)
+      }
+      return review;
     });
   }
 
@@ -339,7 +342,7 @@ class DBHelper {
   static storeOfflineReview(review) {
 
     //read reviews from the local storage
-    let reviews = getOfflineReviews();
+    let reviews = this.getOfflineReviews();
 
     //add the current review to the other (if any) 
     reviews.push(review);
@@ -355,8 +358,31 @@ class DBHelper {
    */
   static getOfflineReviews() {
     return localStorage.getItem('reviews')
-    ? JSON.parse(localStorage.getItem('reviews'))
-    : [];
+      ? JSON.parse(localStorage.getItem('reviews'))
+      : [];
   }
 
+  /**
+   * Add eventListener so that all offline reviews are synchronised with the backend
+   */
+  static initOfflineReviewsSynchronisation() {
+
+    window.addEventListener('online', (event) => {
+
+        DBHelper.getOfflineReviews().forEach(review => {
+
+          //synch to remote server
+          DBHelper.createReview(review, false);
+        });
+
+        localStorage.removeItem('reviews');
+
+        //remove classes for offline reviews
+        document.querySelectorAll(".offline").forEach(reviewElement => {
+          reviewElement.classList.remove("offline")
+          reviewElement.querySelector(".offline-message").remove()
+        });
+
+    });
+  }
 }

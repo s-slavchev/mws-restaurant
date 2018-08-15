@@ -43,6 +43,8 @@ document.getElementById("write-review").addEventListener('submit', event => {
 });
 
 
+DBHelper.initOfflineReviewsSynchronisation();
+
 /**
  * Get current restaurant from page URL.
  */
@@ -121,7 +123,10 @@ fetchReviewsFromURL = () => {
   
   DBHelper.fetchReviews(this.restaurant.id, (error, reviews) => {
     self.reviews = reviews;
+    //display online reviews
     fillReviewsHTML();
+    //display offline reviews
+    fillReviewsHTML(DBHelper.getOfflineReviews());
   });
 }
 
@@ -142,11 +147,6 @@ fillReviewsHTML = (reviews = self.reviews) => {
   }
   const ul = document.getElementById('reviews-list');
   reviews.forEach(review => {
-    ul.appendChild(createReviewHTML(review));
-  });
-
-  //display offline reviews
-  DBHelper.getOfflineReviews().forEach(review => {
     ul.appendChild(createReviewHTML(review));
   });
 
