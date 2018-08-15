@@ -135,9 +135,12 @@ fetchReviewsFromURL = () => {
  */
 fillReviewsHTML = (reviews = self.reviews) => {
   const container = document.getElementById('reviews-container');
-  const title = document.createElement('h3');
-  title.innerHTML = 'Reviews';
-  container.appendChild(title);
+  //add the heading if not added already
+  if (!container.querySelector('h3')) {
+    const title = document.createElement('h3');
+    title.innerHTML = 'Reviews';
+    container.appendChild(title);
+  }
 
   if (!reviews) {
     const noReviews = document.createElement('p');

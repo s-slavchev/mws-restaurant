@@ -29,8 +29,7 @@ self.addEventListener('activate', function (event) {
                 // console.log(`Deleting ${cacheName} cache!`)
                 return caches.delete(cacheName);
             })
-        )
-        )
+        ))
     );
 });
 
@@ -41,52 +40,21 @@ self.addEventListener('fetch', event => {
         return;
     }
 
-    event.respondWith(async function () {
+    if (!(new URL(event.request.url)).href.startsWith(self.location.origin)) {
+        return;
+    }
 
-        // having restaurant.html and restaurants data in the database 
-        // we can recreate all /restaurant.html?id=# pages
-        if ((new URL(event.request.url)).pathname.startsWith('/restaurant.html')) {
-
-            const cachedRestaurant = await caches.match('/restaurant.html');
-
-            if (cachedRestaurant) {
-
-                // console.log(cachedRestaurant);
-
-                // console.log(`Responsing to ${event.request.url} with restaurant.html from the cache`);
-                return cachedRestaurant
-            }
-        }
-
-
-        return caches.open(cacheVersionName).then(caches =>
-
-            //respond from the cache if available 
-            caches.match(event.request).then(response => {
-
-                // console.log(event.request);
-
-                if (response) {
-                    // console.log('Responding from cache!', response);
-                    return response;
-                }
-
-                //fetch from internet, store into the cache and respond
-                return fetch(event.request)
-                    .then(networkResponse => {
-                        // console.log('Fetching from the internet!');
-
-                        caches.put(event.request, networkResponse.clone());
-
-                        // console.log('Storing into cache and responding with the response!', networkResponse);
-
-                        return networkResponse;
-                    })
-                    .catch(error => {
-                        // console.log('Fetch failed!', error);
-                    });
-            })
-        )
-    }());
-
+    event.respondWith(
+        caches.match(event.request).then(function (response) {
+            return response || fetch(event.request).then(response => {
+                let responseClone = response.clone();
+                caches.open(cacheVersionName).then(cache => {
+                    cache.put(event.request, responseClone);
+                });
+                return response;
+            });
+        }).catch(error => {
+            console.log(error);
+        })
+    );
 });
