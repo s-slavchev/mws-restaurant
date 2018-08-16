@@ -1,0 +1,9 @@
+{
+    "name": "Restaurant reviews",
+    "description": "Restaurant reviews project.",
+    "buildpacks": [
+        {
+            "url": "heroku/php"
+        }
+    ]
+}
