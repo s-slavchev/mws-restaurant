@@ -200,7 +200,7 @@ class DBHelper {
 
     let filename = restaurant.photograph || 'placeholder';
 
-    return `/img/${filename}.jpg`;
+    return `/img/${filename}.webp`;
   }
 
   /**
